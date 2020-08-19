@@ -5,7 +5,7 @@ import json
 import time
 
 start = time.time()
-url = 'https://www.goodreads.com/author/list/4634532.Nguy_n_Nh_t_nh?page=1&per_page=1'
+url = 'https://www.goodreads.com/author/list/4634532.Nguy_n_Nh_t_nh?page=1&per_page=30'
 page = urllib.request.urlopen(url)
 soup = BeautifulSoup(page, 'html.parser')
 

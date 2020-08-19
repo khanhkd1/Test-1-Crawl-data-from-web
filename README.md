@@ -8,14 +8,17 @@ Requirements:
 - install python3
 - update pip
 - install libraries from requirements.txt
-  - Macos 10.15.6: 
-    - install homebrew: open terminal run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-    - install mysql-client: brew install mysql-client
+  - Macos 10.15.6: Open terminal run
+    - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    - brew install mysql-client
     - python3 -m pip install --upgrade setuptools
     - brew install mysql
     - pip3 install mysqlclient
+    - brew install python
     - sudo pip3 install -r requirements.txt
-  - Ubuntu 20.04:
+    - pip install Flask-SQLAlchemy
+    - pip install BeautifulSoup4 
+  - Ubuntu 20.04: Open terminal run
     - sudo apt-get install mysql-client
     - sudo apt install python3-testresources
     - pip3 install --upgrade pip setuptools
