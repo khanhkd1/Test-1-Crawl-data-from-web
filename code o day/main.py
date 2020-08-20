@@ -37,10 +37,16 @@ with open('data.csv', 'w', encoding='utf-8') as csv_file:
 	writer = csv.writer(csv_file)
 	writer.writerow(['ID Sach', 'Title', 'Link', 'Author', 'Rate', 'Description', 'Review', 'Comment'])
 	for sach in sum:
-		for rv in sach['review']:
-			for cmt in rv['comment']:
-				writer.writerow([sach['sach_id'], sach['title'], sach['link'], sach['author'], 
-					sach['rate'], sach['description'], rv['review_content'], cmt])
+		if len(sach['review']) == 0:
+			writer.writerow([sach['sach_id'], sach['title'], sach['link'], sach['author'], sach['rate'], sach['description'], '', ''])
+		else:
+			for rv in sach['review']:
+				if len(rv['comment']) == 0:
+					writer.writerow([sach['sach_id'], sach['title'], sach['link'], sach['author'], sach['rate'], sach['description'], rv['review_content'], ''])
+				else:
+					for cmt in rv['comment']:
+						writer.writerow([sach['sach_id'], sach['title'], sach['link'], sach['author'], 
+							sach['rate'], sach['description'], rv['review_content'], cmt])
 
 choose = int(input('Du lieu da luu vao file data.txt va data.csv, chon 1 de luu vao database: '))
 if choose == 1:
