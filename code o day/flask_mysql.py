@@ -12,10 +12,6 @@ def ConnectToDB():
 	Session = sessionmaker(bind=engine)
 	return Session
 
-class Test(Base):
-	__tablename__ = 'test'
-	id = Column(Integer, primary_key=True)
-	name = Column(String)
 
 class Sach(Base):
 	__tablename__ = 'sach'

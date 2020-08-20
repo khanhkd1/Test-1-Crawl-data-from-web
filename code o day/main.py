@@ -3,6 +3,7 @@ import urllib.request
 import function
 import json
 import time
+import csv
 
 start = time.time()
 url = 'https://www.goodreads.com/author/list/4634532.Nguy_n_Nh_t_nh?page=1&per_page=30'
@@ -22,18 +23,28 @@ for feed in books:
 	sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
 
 for book in sum:
-	print("dem ne")
+	print("Running...")
 	book = function.xulyBook(book)
 
 end = time.time()
 
 print("time xu ly: ",(end - start))
 
-choose = int(input('chon 1 de dua du lieu vao DB, 2 de cho data vao file data.txt: '))
+with open('data.txt', 'w', encoding='utf8') as outfile:
+	json.dump(sum, outfile, ensure_ascii=False)
+
+with open('data.csv', 'w', encoding='utf-8') as csv_file:
+	writer = csv.writer(csv_file)
+	writer.writerow(['ID Sach', 'Title', 'Link', 'Author', 'Rate', 'Description', 'Review', 'Comment'])
+	for sach in sum:
+		for rv in sach['review']:
+			for cmt in rv['comment']:
+				writer.writerow([sach['sach_id'], sach['title'], sach['link'], sach['author'], 
+					sach['rate'], sach['description'], rv['review_content'], cmt])
+
+choose = int(input('Du lieu da luu vao file data.txt va data.csv, chon 1 de luu vao database: '))
 if choose == 1:
 	function.inputToDB(sum)
-	print("ok")
-else:
-	with open('data.txt', 'w', encoding='utf8') as outfile:
-		json.dump(sum, outfile, ensure_ascii=False)
+	print("Da lu vao database.")
+
 
