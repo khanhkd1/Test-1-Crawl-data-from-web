@@ -68,3 +68,44 @@ def post(data):
 		print (exp)
 	finally:
 		session.close()
+
+
+def get():
+	try:
+		session = Session()
+		books = session.query(Sach).all()
+		for i in range(len(books)):
+			reivews = []
+			for review in books[i].review:
+				# review = standardizedData(review, ['id'])
+				comments = []
+				for comment in review.comment:
+					comment = standardizedData(comment, ['id', 'review_sach_id'])
+					comments.append(comment)
+				review = standardizedData(review, ['id', 'comment'])
+				review['comment'] = comments
+				reivews.append(review)
+			books[i] = standardizedData(books[i], ['id', 'review'])
+			books[i]['review'] = reivews
+		return books
+	except Exception as exp:
+		raise (exp)
+		return "loi"
+	finally:
+		session.close()
+
+
+def standardizedData(obj, del_param=None):
+		try:
+			obj = obj.__dict__
+		except:
+			return None
+		if '_sa_instance_state' in obj:
+			del obj["_sa_instance_state"]
+		if del_param != None:
+			for d in del_param:
+				try:
+					del obj[d]
+				except:
+					pass
+		return obj

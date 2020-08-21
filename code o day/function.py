@@ -1,6 +1,52 @@
 from bs4 import BeautifulSoup
 import urllib.request
-from testFun import post, getComment
+from testFun import post, getComment, get
+import json
+import time
+import csv
+
+
+def crawlDataFromWeb(url):
+	start = time.time()
+	page = urllib.request.urlopen(url)
+	soup = BeautifulSoup(page, 'html.parser')
+
+	try:
+		books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
+	except:
+		books = []
+
+	sum = []
+	for feed in books:
+		fee1 = feed.find('a')
+		fee2 = feed.find('div', class_="u-anchorTarget")
+		fee3 = feed.find('a', class_="authorName")
+		title = fee1.get('title')
+		link = fee1.get('href')
+		id = int(fee2.get('id'))
+		sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
+
+	for book in sum:
+		print("Running...")
+		book = xulyBook(book)
+
+	end = time.time()
+
+	print("time xu ly: ",(end - start))
+
+	with open('dataWeb.txt', 'w', encoding='utf8') as outfile:
+		json.dump(sum, outfile, ensure_ascii=False)
+
+	with open('dataWeb.csv', 'w', encoding='utf-8') as csv_file:
+		writer = csv.writer(csv_file)
+		writer.writerow(['ID Sach', 'Title', 'Link', 'Author', 'Rate', 'Description', 'Review'])
+		for sach in sum:
+			writer.writerow([sach['sach_id'], sach['title'], sach['link'], sach['author'], sach['rate'], sach['description'], sach['review']])
+
+	choose = int(input('Du lieu da luu vao file data.txt va data.csv, chon 1 de luu vao database (khong luu - chon so khac): '))
+	if choose == 1:
+		inputToDB(sum)
+		print("Da lu vao database.")
 
 
 def xulyUser(user):
@@ -51,3 +97,14 @@ def xulyBook(data):
 def inputToDB(arrData):
 	for data in arrData:
 		post(data)
+
+def getDataFromDatabase():
+	sum = get()
+	with open('dataDB.txt', 'w', encoding='utf8') as outfile:
+		json.dump(sum, outfile, ensure_ascii=False)
+
+	with open('dataDB.csv', 'w', encoding='utf-8') as csv_file:
+		writer = csv.writer(csv_file)
+		writer.writerow(['ID Sach', 'Title', 'Link', 'Author', 'Rate', 'Description', 'Review'])
+		for sach in sum:
+			writer.writerow([sach['sach_id'], sach['title'], sach['link'], sach['author'], sach['rate'], sach['description'], sach['review']])
