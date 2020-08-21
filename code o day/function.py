@@ -16,8 +16,11 @@ def xulyBook(data):
 	rate = soup.find('div', id='topcol').find('div',
 			id='metacol').find('div', id='bookMeta').find('span', itemprop="ratingValue")
 	data['rate'] = float((rate.text))
-	book = soup.find('div', id="description", class_="readable stacked").find('span', style="")
-	data['description'] = book.text
+	try:
+		book = soup.find('div', id="description", class_="readable stacked").find('span', style="")
+		data['description'] = book.text
+	except:
+		data['description'] = ''
 	data['review'] = []
 	reviews = soup.find('div', id="bookReviews").findAll('div', class_="friendReviews elementListBrown")
 	for review in reviews:

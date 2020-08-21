@@ -6,11 +6,14 @@ import time
 import csv
 
 start = time.time()
-url = 'https://www.goodreads.com/author/list/4634532.Nguy_n_Nh_t_nh?page=1&per_page=30'
+url = 'https://www.goodreads.com/author/list/4634532.Nguy_n_Nh_t_nh?page=1&per_page=150'
 page = urllib.request.urlopen(url)
 soup = BeautifulSoup(page, 'html.parser')
 
-books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
+try:
+	books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
+except:
+	books = []
 
 sum = []
 for feed in books:
