@@ -8,35 +8,44 @@ Base = declarative_base()
 
 # khoi tao ket noi vao co so du lieu
 def ConnectToDB():
-	engine = create_engine('mysql+mysqldb://root:vjpvjp123A01@localhost/test1_crawlData?charset=utf8mb4')
+	engine = create_engine('mysql+mysqldb://root:vjpvjp123A01@localhost/test1_crawlData_DesignAgain?charset=utf8mb4')
 	Session = sessionmaker(bind=engine)
 	return Session
 
 
-class Sach(Base):
-	__tablename__ = 'sach'
-	id = Column(Integer, primary_key=True)
-	sach_id = Column(Integer)
-	title = Column(String)
-	link = Column(String)
-	author = Column(String)
-	rate = Column(Float)
-	description = Column(String)
-	review = relationship('ReviewSach')
 
-class ReviewSach(Base):
-	__tablename__ = 'review_sach'
+class Book(Base):
+	__tablename__ = 'book'
+	id = Column(Integer, primary_key=True)
+	book_id = Column(Integer)
+	book_title = Column(String)
+	book_author = Column(String)
+	book_link = Column(String)
+	book_rate = Column(Float)
+	book_description = Column(String)
+	review_book = relationship('ReviewBook')
+
+class User(Base):
+	__tablename__ = 'user'
 	id = Column(Integer, primary_key=True)
 	user_id = Column(Integer)
-	sach_id = Column(Integer, ForeignKey('sach.id'))
-	name_user = Column(String)
-	rate = Column(Integer)
-	review_content = Column(String)
-	date_post = Column(String)
-	comment = relationship('CommentReviewSach')
+	user_name = Column(String)
+	review_user = relationship('ReviewBook')
+	comment_user = relationship('CommentOfReview')
 
-class CommentReviewSach(Base):
-	__tablename__ = 'comment_review_sach'
+class ReviewBook(Base):
+	__tablename__ = 'review'
 	id = Column(Integer, primary_key=True)
-	review_sach_id = Column(Integer, ForeignKey('review_sach.id'))
-	comment = Column(String)
+	review_user_id = Column(Integer, ForeignKey('user.id'))
+	review_book_id = Column(Integer, ForeignKey('book.id'))
+	review_rate = Column(Integer)
+	review_content = Column(String)
+	review_date_post = Column(String)
+	comment_review = relationship('CommentOfReview')
+
+class CommentOfReview(Base):
+	__tablename__ = 'comment'
+	id = Column(Integer, primary_key=True)
+	comment_review_id = Column(Integer, ForeignKey('review.id'))
+	comment_user_id = Column(Integer, ForeignKey('user.id'))
+	comment_content = Column(String)

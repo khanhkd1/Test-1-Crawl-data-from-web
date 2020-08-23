@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import urllib.request
-from testFun import post, getComment, get
+from testFun import getComment, post, getUser
 import json
 import time
 import csv
@@ -31,22 +31,13 @@ def crawlDataFromWeb(url):
 		book = xulyBook(book)
 
 	end = time.time()
-
+	inputToDB(sum)
 	print("time xu ly: ",(end - start))
+	users = getUser()
+	dataToCSV(sum, users)
 
-	with open('dataWeb.txt', 'w', encoding='utf8') as outfile:
-		json.dump(sum, outfile, ensure_ascii=False)
 
-	with open('dataWeb.csv', 'w', encoding='utf-8') as csv_file:
-		writer = csv.writer(csv_file)
-		writer.writerow(['ID Sach', 'Title', 'Link', 'Author', 'Rate', 'Description', 'Review'])
-		for sach in sum:
-			writer.writerow([sach['sach_id'], sach['title'], sach['link'], sach['author'], sach['rate'], sach['description'], sach['review']])
 
-	choose = int(input('Du lieu da luu vao file data.txt va data.csv, chon 1 de luu vao database (khong luu - chon so khac): '))
-	if choose == 1:
-		inputToDB(sum)
-		print("Da lu vao database.")
 
 
 def xulyUser(user):
@@ -81,7 +72,7 @@ def xulyBook(data):
 																			class_="staticStar p10")
 
 		data_review['user_id'] = xulyUser(name.get('href'))
-		data_review['name_user'] = name.get('name')
+		data_review['user_name'] = name.get('name')
 		data_review['rate'] = len(rate)
 		data_review['review_content'] = content.text
 		data_review['date_post'] = date_post.text
@@ -98,13 +89,31 @@ def inputToDB(arrData):
 	for data in arrData:
 		post(data)
 
-def getDataFromDatabase():
-	sum = get()
-	with open('dataDB.txt', 'w', encoding='utf8') as outfile:
-		json.dump(sum, outfile, ensure_ascii=False)
 
-	with open('dataDB.csv', 'w', encoding='utf-8') as csv_file:
+def dataToCSV(books, users):
+	with open('Books.csv', 'w', encoding='utf-8') as csv_file:
 		writer = csv.writer(csv_file)
-		writer.writerow(['ID Sach', 'Title', 'Link', 'Author', 'Rate', 'Description', 'Review'])
-		for sach in sum:
-			writer.writerow([sach['sach_id'], sach['title'], sach['link'], sach['author'], sach['rate'], sach['description'], sach['review']])
+		writer.writerow(['ID Sach', 'Title', 'Link', 'Author', 'Rate', 'Description'])
+		for sach in books:
+			writer.writerow([sach['sach_id'], sach['title'], sach['link'], sach['author'], sach['rate'], sach['description']])
+
+	with open('Reviews.csv', 'w', encoding='utf-8') as csv_file:
+		writer = csv.writer(csv_file)
+		writer.writerow(['ID User', 'Name', 'Book', 'Review', 'Rate', 'Date Post'])
+		for sach in books:
+			for review in sach['review']:
+				writer.writerow([review['user_id'], review['user_name'], sach['title'], review['review_content'], review['rate'], review['date_post']])
+
+	with open('Comments.csv', 'w', encoding='utf-8') as csv_file:
+		writer = csv.writer(csv_file)
+		writer.writerow(['ID User', 'Name', 'Book', 'Review', 'Comment'])
+		for sach in books:
+			for review in sach['review']:
+				for comment in review['comment']:
+					writer.writerow([comment['user_id'], comment['user_name'], sach['title'], review['review_content'], comment['content']])
+
+	with open('Users.csv', 'w', encoding='utf-8') as csv_file:
+		writer = csv.writer(csv_file)
+		writer.writerow(['ID User', 'Name'])
+		for user in users:
+			writer.writerow([user['user_id'], user['user_name']])
