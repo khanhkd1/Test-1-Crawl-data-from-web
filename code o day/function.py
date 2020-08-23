@@ -37,9 +37,6 @@ def crawlDataFromWeb(url):
 	dataToCSV(sum, users)
 
 
-
-
-
 def xulyUser(user):
 	if('/user/show/' in user):
 		user = user.replace('/user/show/', '')
@@ -83,6 +80,21 @@ def xulyBook(data):
 		data_review['comment'] = getComment(data_review['link_review'])
 		data['review'].append(data_review)
 	return data
+
+def xuLyURL(url):
+	url = url[url.index("'")+1:]
+	url = url[:url.index("'")]
+	return 'https://www.goodreads.com/book/show' +url[13:]
+
+def xuLyPageReview(url):
+	urls = [url]
+	page = urllib.request.urlopen(url)
+	soup = BeautifulSoup(page, 'html.parser')
+	reviews = soup.find('div', class_="uitext", style="float: right; margin-top: 10px").findAll('a')
+	reviews = reviews[:-1]
+	for rv in reviews:
+		urls.append(xuLyURL(rv.get('onclick')))
+	return urls
 
 
 def inputToDB(arrData):
