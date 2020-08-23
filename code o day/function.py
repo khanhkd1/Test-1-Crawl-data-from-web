@@ -31,6 +31,7 @@ def crawlDataFromWeb(url):
 		book = xulyBook(book)
 
 	end = time.time()
+	dataToText(sum)
 	inputToDB(sum)
 	print("time xu ly: ",(end - start))
 	users = getUser()
@@ -56,29 +57,32 @@ def xulyBook(data):
 	except:
 		data['description'] = ''
 	data['review'] = []
-	reviews = soup.find('div', id="bookReviews").findAll('div', class_="friendReviews elementListBrown")
-	for review in reviews:
-		data_review = {}
-		content = review.find('div', class_="reviewText stacked").find('span',
-										class_="readable").find('span', style=None)
-		name = review.find('div', class_="reviewHeader uitext stacked").find('span',
-																			 itemprop="author").find('a')
-		date_post = review.find('div', class_="reviewHeader uitext stacked").find('a',
-															  class_="reviewDate createdAt right")
-		rate = review.find('div', class_="reviewHeader uitext stacked").findAll('span',
-																			class_="staticStar p10")
+	for linkPage in xuLyPageReview(data['link']):
+		page_ = urllib.request.urlopen(linkPage)
+		soup_ = BeautifulSoup(page_, 'html.parser')
+		reviews = soup_.find('div', id="bookReviews").findAll('div', class_="friendReviews elementListBrown")
+		for review in reviews:
+			data_review = {}
+			content = review.find('div', class_="reviewText stacked").find('span',
+											class_="readable").find('span', style=None)
+			name = review.find('div', class_="reviewHeader uitext stacked").find('span',
+																				 itemprop="author").find('a')
+			date_post = review.find('div', class_="reviewHeader uitext stacked").find('a',
+																  class_="reviewDate createdAt right")
+			rate = review.find('div', class_="reviewHeader uitext stacked").findAll('span',
+																				class_="staticStar p10")
 
-		data_review['user_id'] = xulyUser(name.get('href'))
-		data_review['user_name'] = name.get('name')
-		data_review['rate'] = len(rate)
-		data_review['review_content'] = content.text
-		data_review['date_post'] = date_post.text
-		commen = review.find('div').find('div').find('div',
-		class_="left bodycol").find('div', class_="reviewFooter uitext buttons").find('div',
-																				class_="updateActionLinks")
-		data_review['link_review'] = 'https://www.goodreads.com' + commen.findAll('a')[-1].get('href')
-		data_review['comment'] = getComment(data_review['link_review'])
-		data['review'].append(data_review)
+			data_review['user_id'] = xulyUser(name.get('href'))
+			data_review['user_name'] = name.get('name')
+			data_review['rate'] = len(rate)
+			data_review['review_content'] = content.text
+			data_review['date_post'] = date_post.text
+			commen = review.find('div').find('div').find('div',
+			class_="left bodycol").find('div', class_="reviewFooter uitext buttons").find('div',
+																					class_="updateActionLinks")
+			data_review['link_review'] = 'https://www.goodreads.com' + commen.findAll('a')[-1].get('href')
+			data_review['comment'] = getComment(data_review['link_review'])
+			data['review'].append(data_review)
 	return data
 
 def xuLyURL(url):
@@ -90,16 +94,24 @@ def xuLyPageReview(url):
 	urls = [url]
 	page = urllib.request.urlopen(url)
 	soup = BeautifulSoup(page, 'html.parser')
-	reviews = soup.find('div', class_="uitext", style="float: right; margin-top: 10px").findAll('a')
-	reviews = reviews[:-1]
-	for rv in reviews:
-		urls.append(xuLyURL(rv.get('onclick')))
+	try:
+		reviews = soup.find('div', class_="uitext", style="float: right; margin-top: 10px").findAll('a')
+		reviews = reviews[:-1]
+		for rv in reviews:
+			urls.append(xuLyURL(rv.get('onclick')))
+	except:
+		pass
 	return urls
 
 
 def inputToDB(arrData):
 	for data in arrData:
 		post(data)
+
+
+def dataToText(books):
+	with open('All.txt', 'w', encoding='utf8') as txt_file:
+		json.dump(books, txt_file, ensure_ascii=False)
 
 
 def dataToCSV(books, users):

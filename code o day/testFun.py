@@ -55,7 +55,8 @@ def post(data):
 			finally:
 				user_id_review = getUserID(review['user_id'])
 				addReview(review, user_id_review, book_id)
-				reviewsach_id = getReviewID(review['review_content'])
+				reviewsach_id = getReviewID(review['review_content'], user_id_review, book_id, 
+					review['date_post'], review['rate'])
 				for comment in review['comment']:
 					try:
 						addUser(comment)
@@ -79,17 +80,21 @@ def getUserID(user_id):
 	session.close()
 	return user['id']
 
-# def getUserName(user_id):
-# 	session = Session()
-# 	user = standardizedData(session.query(User).filter_by(user_id= user_id).one())
-# 	session.close()
-# 	return user['user_name']
 
-def getReviewID(review_content):
+def getReviewID(review_content, review_user_id, review_book_id, review_date_post, review_rate):
 	session = Session()
-	review = standardizedData(session.query(ReviewBook).filter_by(review_content= review_content).one())
-	session.close()
-	return review['id']
+	try:
+		review = standardizedData(session.query(ReviewBook).filter_by(review_content= review_content, review_user_id=review_user_id, 
+			review_book_id=review_book_id, review_date_post= review_date_post, review_rate=review_rate).one())
+		return review['id']
+	except:
+		review = session.query(ReviewBook).filter_by(review_content= review_content, review_user_id=review_user_id, 
+			review_book_id=review_book_id, review_date_post= review_date_post, review_rate=review_rate).all()
+		return standardizedData(review[0])['id']
+	finally:
+		session.close()
+	
+
 
 def addComment(data, reviewsach_id, user_id_comment):
 	session = Session()
