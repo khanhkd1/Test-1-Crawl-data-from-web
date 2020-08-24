@@ -4,6 +4,34 @@ Project function: crawl data from: https://www.goodreads.com/author/list/4634532
 
 Refer to: https://viblo.asia/p/web-crawling-voi-thu-vien-beautifulsoup-1VgZvNGOZAw + internet
 
+Form Data:
+    data = [
+    {
+        Book ID,
+        Title,
+        Link,
+        Author,
+        Rate,
+        Description,
+        Review = [
+        {
+            User ID,
+            User Name,
+            Review Content,
+            Rate,
+            Date Post,
+            Comment = [
+            {
+                User ID,
+                User Name,
+                Comment Content
+            }
+            ]
+        }
+        ]
+    }
+    ]
+
 Node: sửa 'per_page' và 'page' của url (file main.py) để điều chỉnh số lượng sách muốn lấy thông tin
 
 Requirements:
