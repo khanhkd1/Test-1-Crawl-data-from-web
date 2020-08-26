@@ -25,10 +25,17 @@ def crawlDataFromWeb(url):
 		link = fee1.get('href')
 		id = int(fee2.get('id'))
 		sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
+	except_ = []
+	for i in range(len(sum)):
+		print("Running...",i)
+		while True:
+			try:
+				sum[i] = xulyBook(sum[i])
+				break
+			except:
+				print("Running again...")
 
-	for book in sum:
-		print("Running...")
-		book = xulyBook(book)
+
 
 	end = time.time()
 	dataToText(sum)
