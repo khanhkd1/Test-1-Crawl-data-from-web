@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import urllib.request
+import urllib.error
 from testFun import getComment, post, getUser
 import json
 import time
@@ -8,41 +9,64 @@ import csv
 
 def crawlDataFromWeb(url):
 	start = time.time()
-	page = urllib.request.urlopen(url)
-	soup = BeautifulSoup(page, 'html.parser')
-
-	try:
-		books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
-	except:
-		books = []
-
 	sum = []
-	for feed in books:
-		fee1 = feed.find('a')
-		fee2 = feed.find('div', class_="u-anchorTarget")
-		fee3 = feed.find('a', class_="authorName")
-		title = fee1.get('title')
-		link = fee1.get('href')
-		id = int(fee2.get('id'))
-		sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
-	except_ = []
+	for ur in xuLyPageBook(url):
+		page = urllib.request.urlopen(ur)
+		soup = BeautifulSoup(page, 'html.parser')
+		try:
+			books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
+		except:
+			books = []
+		for feed in books:
+			fee1 = feed.find('a')
+			fee2 = feed.find('div', class_="u-anchorTarget")
+			fee3 = feed.find('a', class_="authorName")
+			title = fee1.get('title')
+			link = fee1.get('href')
+			id = int(fee2.get('id'))
+			sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
 	for i in range(len(sum)):
 		print("Running...",i)
 		while True:
 			try:
 				sum[i] = xulyBook(sum[i])
 				break
-			except:
+			except Exception as ex:
 				print("Running again...")
-
-
-
 	end = time.time()
 	dataToText(sum)
 	inputToDB(sum)
 	print("time xu ly: ",(end - start))
 	users = getUser()
 	dataToCSV(sum, users)
+
+
+# def crawlDataFromWeb(url):
+# 	sum = []
+# 	page = urllib.request.urlopen(url)
+# 	soup = BeautifulSoup(page, 'html.parser')
+# 	try:
+# 		books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
+# 	except:
+# 		books = []
+# 	for feed in books:
+# 		fee1 = feed.find('a')
+# 		fee2 = feed.find('div', class_="u-anchorTarget")
+# 		fee3 = feed.find('a', class_="authorName")
+# 		title = fee1.get('title')
+# 		link = fee1.get('href')
+# 		id = int(fee2.get('id'))
+# 		sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
+# 	for i in range(len(sum)):
+# 		print("Running...",i)
+# 		while True:
+# 			try:
+# 				sum[i] = xulyBook(sum[i])
+# 				break
+# 			except Exception as ex:
+# 				print("Running again...")
+# 	dataToText(sum)
+
 
 
 def xulyUser(user):
@@ -65,8 +89,11 @@ def xulyBook(data):
 		data['description'] = ''
 	data['review'] = []
 	for linkPage in xuLyPageReview(data['link']):
-		page_ = urllib.request.urlopen(linkPage)
-		soup_ = BeautifulSoup(page_, 'html.parser')
+		try:
+			page_ = urllib.request.urlopen(linkPage)
+			soup_ = BeautifulSoup(page_, 'html.parser')
+		except urllib.error.URLError as e: 
+			continue
 		reviews = soup_.find('div', id="bookReviews").findAll('div', class_="friendReviews elementListBrown")
 		for review in reviews:
 			data_review = {}
@@ -107,6 +134,19 @@ def xuLyPageReview(url):
 		for rv in reviews:
 			urls.append(xuLyURL(rv.get('onclick')))
 	except:
+		pass
+	return urls
+
+def xuLyPageBook(url):
+	urls = [url]
+	page = urllib.request.urlopen(url)
+	soup = BeautifulSoup(page, 'html.parser')
+	try:
+		reviews = soup.find('div', class_="leftContainer").find_next('div', style="float: right").findAll('a')
+		reviews = reviews[:-1]
+		for rv in reviews:
+			urls.append('https://www.goodreads.com' + rv.get('href'))
+	except Exception as ex:
 		pass
 	return urls
 
