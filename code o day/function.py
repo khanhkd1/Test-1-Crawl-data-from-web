@@ -7,56 +7,24 @@ import time
 import csv
 
 
-def crawlDataFromWeb(url):
-	start = time.time()
-	sum = []
-	for ur in xuLyPageBook(url):
-		page = urllib.request.urlopen(ur)
-		soup = BeautifulSoup(page, 'html.parser')
-		try:
-			books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
-		except:
-			books = []
-		for feed in books:
-			fee1 = feed.find('a')
-			fee2 = feed.find('div', class_="u-anchorTarget")
-			fee3 = feed.find('a', class_="authorName")
-			title = fee1.get('title')
-			link = fee1.get('href')
-			id = int(fee2.get('id'))
-			sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
-	for i in range(len(sum)):
-		print("Running...",i)
-		while True:
-			try:
-				sum[i] = xulyBook(sum[i])
-				break
-			except Exception as ex:
-				print("Running again...")
-	end = time.time()
-	dataToText(sum)
-	inputToDB(sum)
-	print("time xu ly: ",(end - start))
-	users = getUser()
-	dataToCSV(sum, users)
-
-
 # def crawlDataFromWeb(url):
+# 	start = time.time()
 # 	sum = []
-# 	page = urllib.request.urlopen(url)
-# 	soup = BeautifulSoup(page, 'html.parser')
-# 	try:
-# 		books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
-# 	except:
-# 		books = []
-# 	for feed in books:
-# 		fee1 = feed.find('a')
-# 		fee2 = feed.find('div', class_="u-anchorTarget")
-# 		fee3 = feed.find('a', class_="authorName")
-# 		title = fee1.get('title')
-# 		link = fee1.get('href')
-# 		id = int(fee2.get('id'))
-# 		sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
+# 	for ur in xuLyPageBook(url):
+# 		page = urllib.request.urlopen(ur)
+# 		soup = BeautifulSoup(page, 'html.parser')
+# 		try:
+# 			books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
+# 		except:
+# 			books = []
+# 		for feed in books:
+# 			fee1 = feed.find('a')
+# 			fee2 = feed.find('div', class_="u-anchorTarget")
+# 			fee3 = feed.find('a', class_="authorName")
+# 			title = fee1.get('title')
+# 			link = fee1.get('href')
+# 			id = int(fee2.get('id'))
+# 			sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
 # 	for i in range(len(sum)):
 # 		print("Running...",i)
 # 		while True:
@@ -65,7 +33,39 @@ def crawlDataFromWeb(url):
 # 				break
 # 			except Exception as ex:
 # 				print("Running again...")
+# 	end = time.time()
 # 	dataToText(sum)
+# 	inputToDB(sum)
+# 	print("time xu ly: ",(end - start))
+# 	users = getUser()
+# 	dataToCSV(sum, users)
+
+
+def crawlDataFromWeb(url):
+	sum = []
+	page = urllib.request.urlopen(url)
+	soup = BeautifulSoup(page, 'html.parser')
+	try:
+		books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
+	except:
+		books = []
+	for feed in books:
+		fee1 = feed.find('a')
+		fee2 = feed.find('div', class_="u-anchorTarget")
+		fee3 = feed.find('a', class_="authorName")
+		title = fee1.get('title')
+		link = fee1.get('href')
+		id = int(fee2.get('id'))
+		sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
+	for i in range(len(sum)):
+		print("Running...",i)
+		while True:
+			try:
+				sum[i] = xulyBook(sum[i])
+				break
+			except Exception as ex:
+				print("Running again...")
+	dataToText(sum)
 
 
 
@@ -157,25 +157,25 @@ def inputToDB(arrData):
 
 
 def dataToText(books):
-	with open('All.txt', 'w', encoding='utf8') as txt_file:
+	with open('data/All.txt', 'w', encoding='utf8') as txt_file:
 		json.dump(books, txt_file, ensure_ascii=False)
 
 
 def dataToCSV(books, users):
-	with open('Books.csv', 'w', encoding='utf-8') as csv_file:
+	with open('data/Books.csv', 'w', encoding='utf-8') as csv_file:
 		writer = csv.writer(csv_file)
 		writer.writerow(['ID Sach', 'Title', 'Link', 'Author', 'Rate', 'Description'])
 		for sach in books:
 			writer.writerow([sach['sach_id'], sach['title'], sach['link'], sach['author'], sach['rate'], sach['description']])
 
-	with open('Reviews.csv', 'w', encoding='utf-8') as csv_file:
+	with open('data/Reviews.csv', 'w', encoding='utf-8') as csv_file:
 		writer = csv.writer(csv_file)
 		writer.writerow(['ID User', 'Name', 'Book', 'Review', 'Rate', 'Date Post'])
 		for sach in books:
 			for review in sach['review']:
 				writer.writerow([review['user_id'], review['user_name'], sach['title'], review['review_content'], review['rate'], review['date_post']])
 
-	with open('Comments.csv', 'w', encoding='utf-8') as csv_file:
+	with open('data/Comments.csv', 'w', encoding='utf-8') as csv_file:
 		writer = csv.writer(csv_file)
 		writer.writerow(['ID User', 'Name', 'Book', 'Review', 'Comment'])
 		for sach in books:
@@ -183,7 +183,7 @@ def dataToCSV(books, users):
 				for comment in review['comment']:
 					writer.writerow([comment['user_id'], comment['user_name'], sach['title'], review['review_content'], comment['content']])
 
-	with open('Users.csv', 'w', encoding='utf-8') as csv_file:
+	with open('data/Users.csv', 'w', encoding='utf-8') as csv_file:
 		writer = csv.writer(csv_file)
 		writer.writerow(['ID User', 'Name'])
 		for user in users:
