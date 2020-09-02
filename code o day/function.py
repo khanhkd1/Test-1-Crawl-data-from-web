@@ -66,6 +66,7 @@ def crawlDataFromWeb(url):
 			except Exception as ex:
 				print("Running again...")
 	dataToText(sum)
+	inputToDB(sum)
 
 
 
