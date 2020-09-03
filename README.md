@@ -39,7 +39,7 @@ Form Data:
 
 
 Requirements:
-- install python3.6 (use Conda)
+- <b>install python3.6 (use Conda)</b>
 
   - Macos 10.15.6: Open terminal run
     - /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
