@@ -7,56 +7,24 @@ import time
 import csv
 
 
-# def crawlDataFromWeb(url):
-# 	start = time.time()
-# 	sum = []
-# 	for ur in xuLyPageBook(url):
-# 		page = urllib.request.urlopen(ur)
-# 		soup = BeautifulSoup(page, 'html.parser')
-# 		try:
-# 			books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
-# 		except:
-# 			books = []
-# 		for feed in books:
-# 			fee1 = feed.find('a')
-# 			fee2 = feed.find('div', class_="u-anchorTarget")
-# 			fee3 = feed.find('a', class_="authorName")
-# 			title = fee1.get('title')
-# 			link = fee1.get('href')
-# 			id = int(fee2.get('id'))
-# 			sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
-# 	for i in range(len(sum)):
-# 		print("Running...",i)
-# 		while True:
-# 			try:
-# 				sum[i] = xulyBook(sum[i])
-# 				break
-# 			except Exception as ex:
-# 				print("Running again...")
-# 	end = time.time()
-# 	dataToText(sum)
-# 	inputToDB(sum)
-# 	print("time xu ly: ",(end - start))
-# 	users = getUser()
-# 	dataToCSV(sum, users)
-
-
 def crawlDataFromWeb(url):
+	start = time.time()
 	sum = []
-	page = urllib.request.urlopen(url)
-	soup = BeautifulSoup(page, 'html.parser')
-	try:
-		books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
-	except:
-		books = []
-	for feed in books:
-		fee1 = feed.find('a')
-		fee2 = feed.find('div', class_="u-anchorTarget")
-		fee3 = feed.find('a', class_="authorName")
-		title = fee1.get('title')
-		link = fee1.get('href')
-		id = int(fee2.get('id'))
-		sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
+	for ur in xuLyPageBook(url):
+		page = urllib.request.urlopen(ur)
+		soup = BeautifulSoup(page, 'html.parser')
+		try:
+			books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
+		except:
+			books = []
+		for feed in books:
+			fee1 = feed.find('a')
+			fee2 = feed.find('div', class_="u-anchorTarget")
+			fee3 = feed.find('a', class_="authorName")
+			title = fee1.get('title')
+			link = fee1.get('href')
+			id = int(fee2.get('id'))
+			sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
 	for i in range(len(sum)):
 		print("Running...",i)
 		while True:
@@ -65,8 +33,40 @@ def crawlDataFromWeb(url):
 				break
 			except Exception as ex:
 				print("Running again...")
+	end = time.time()
 	dataToText(sum)
 	inputToDB(sum)
+	print("time xu ly: ",(end - start))
+	users = getUser()
+	dataToCSV(sum, users)
+
+
+# def crawlDataFromWeb(url):
+# 	sum = []
+# 	page = urllib.request.urlopen(url)
+# 	soup = BeautifulSoup(page, 'html.parser')
+# 	try:
+# 		books = soup.find('table', class_="tableList").findAll('tr', itemtype="http://schema.org/Book")
+# 	except:
+# 		books = []
+# 	for feed in books:
+# 		fee1 = feed.find('a')
+# 		fee2 = feed.find('div', class_="u-anchorTarget")
+# 		fee3 = feed.find('a', class_="authorName")
+# 		title = fee1.get('title')
+# 		link = fee1.get('href')
+# 		id = int(fee2.get('id'))
+# 		sum.append({'title': title, 'link': 'https://www.goodreads.com'+link, 'sach_id' : id, 'author': fee3.text})
+# 	for i in range(len(sum)):
+# 		print("Running...",i)
+# 		while True:
+# 			try:
+# 				sum[i] = xulyBook(sum[i])
+# 				break
+# 			except Exception as ex:
+# 				print("Running again...")
+# 	dataToText(sum)
+# 	inputToDB(sum)
 
 
 
