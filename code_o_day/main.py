@@ -3,8 +3,8 @@ from function import crawlDataFromWeb
 from getNameAndAddress import nameAndAddressToFile
 
 
-crawlDataFromWeb('https://www.goodreads.com/author/list/4634532.Nguy_n_Nh_t_nh?page=1&per_page=30')
-print("Đã lấy xong dữ liệu và lưu tại trong folder code_o_day/data")
+# crawlDataFromWeb('https://www.goodreads.com/author/list/4634532.Nguy_n_Nh_t_nh?page=1&per_page=30')
+# print("Đã lấy xong dữ liệu và lưu tại trong folder code_o_day/data")
 
 nameAndAddressToFile()
 print('Đã tách ra tên người và địa điểm, lưu tại code_o_day/nameAndAddr')
