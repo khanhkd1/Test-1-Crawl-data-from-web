@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from function import crawlDataFromWeb
-from getNameAndAddress import nameAndAddressToFile
+from getNameAndAddress import nameAndAddressToFile, loadJsonWordFile
 
 
 # crawlDataFromWeb('https://www.goodreads.com/author/list/4634532.Nguy_n_Nh_t_nh?page=1&per_page=30')
@@ -8,6 +8,24 @@ from getNameAndAddress import nameAndAddressToFile
 
 nameAndAddressToFile()
 print('Đã tách ra tên người và địa điểm, lưu tại code_o_day/nameAndAddr')
+
+
+
+
+
+
+
+
+# print((loadJsonWordFile()))
+
+
+
+
+
+
+
+
+
 
 
 # xu li review all language, english, tieng viet

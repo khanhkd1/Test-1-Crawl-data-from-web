@@ -4,7 +4,13 @@ from langdetect import detect
 import pandas as pd
 import nltk
 import csv
+import json
 
+
+def loadJsonWordFile():
+	with open('exceptWord.json', encoding='utf-8') as f:
+		data = json.load(f)
+	return set(data)
 
 
 def preprocess(sent):
@@ -46,17 +52,17 @@ def addToSet(myset, data):
 			if detect(text[0]) == 'vi':
 				for tup in pos_tag(text[0]):
 					if tup[1] == 'Np':
-						# myset.add(tup[0])
-						mem.append(tup[0])
+						if not tup[0] in loadJsonWordFile():
+							mem.append(tup[0])
 			else:
 				nltk_tokens = preprocess(text[0])
 				cp = nltk.RegexpParser('NNPs: {<NNP>?<NNP>*<NNP>}')
 				cs = cp.parse(nltk_tokens)
 				for i in cs:
 					if not type(i) is tuple:
-						# myset.add(str(i).replace('(NNPs ','').replace('/NNP', '')[:-1])
-						mem.append(str(i).replace('(NNPs ','').replace('/NNP', '')[:-1])
-			myset[text[0]] = mem
+						if not str(i).replace('(NNPs ','').replace('/NNP', '')[:-1] in loadJsonWordFile():
+							mem.append(str(i).replace('(NNPs ','').replace('/NNP', '')[:-1])
+			myset[text[0]] = list(set(mem))
 		except Exception as E:
 			pass
 	return myset
