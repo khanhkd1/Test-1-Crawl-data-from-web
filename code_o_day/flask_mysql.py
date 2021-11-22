@@ -8,7 +8,7 @@ Base = declarative_base()
 
 # khoi tao ket noi vao co so du lieu
 def ConnectToDB():
-	engine = create_engine('mysql+mysqldb://root:vjpvjp123A01@localhost/test1_crawlData_DesignAgain?charset=utf8mb4')
+	engine = create_engine('mysql+mysqldb://root:pass@localhost/test1_crawlData_DesignAgain?charset=utf8mb4')
 	Session = sessionmaker(bind=engine)
 	return Session
 
